@@ -3,7 +3,6 @@ node_modules
 npm-shrinkwrap.json
 doc/examples/*/package-lock.json
 .DS_Store
-.vscode
 .idea
 
 # tmp - `dev` time generated assets
@@ -29,4 +28,3 @@ typings/axe-core/axe-core-tests.js
 
 # doc
 doc/rule-descriptions.*.md
-

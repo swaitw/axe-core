@@ -8,29 +8,29 @@ The plugin system was initially designed to support functionality like highlight
 
 Plugins can be viewed as a registry of tools. The plugins themselves are registered with axe and then allow themselves for the registration of plugin instances.
 
-Lets walk through a plugin implementation as an example to illustrate how plugins and plugin instances work.
+Let's walk through a plugin implementation as an example to illustrate how plugins and plugin instances work.
 
 ### A simple "act" plugin
 
 The act plugin will simply perform an action of some sort inside every iframe on the page. An example of how such a plugin might be used is to implement an instance of this plugin that performs highlighting of all of the elements of a particular type on the page.
 
-Plugins currently support two functions, a "run" function and a "collect" function. Together these functions can be combined to implement complex behaviors on top of the axe system.
+Plugins currently support two functions: a "run" function and a "collect" function. Together these functions can be combined to implement complex behaviors on top of the axe system.
 
-In order to create such a plugin, we need to implement the "run" function for the plugin, and the command that registers and executes the "run" function within each iframe on the page that contains axe. Lets look at what a noop implementation of this run function would look like:
+To create such a plugin, we need to implement the `run` function and the command that registers and executes the `run` function within each iframe on the page containing axe. Let's look at what a noop implementation of this run function would look like:
 
 #### Basic plugin
 
 ```js
 axe.registerPlugin({
   id: 'doStuff',
-  run: function(id, action, options, callback) {
+  run: function (id, action, options, callback) {
     var frames;
     var q = axe.utils.queue();
     var that = this;
     frames = axe.utils.toArray(document.querySelectorAll('iframe, frame'));
 
-    frames.forEach(function(frame) {
-      q.defer(function(done) {
+    frames.forEach(function (frame) {
+      q.defer(function (done) {
         axe.utils.sendCommandToFrame(
           frame,
           {
@@ -39,7 +39,7 @@ axe.registerPlugin({
             parameter: id,
             action: action
           },
-          function() {
+          function () {
             done();
           }
         );
@@ -47,7 +47,7 @@ axe.registerPlugin({
     });
 
     if (!options.context.length) {
-      q.defer(function(done) {
+      q.defer(function (done) {
         that._registry[id][action].call(
           that._registry[id],
           document,
@@ -61,7 +61,7 @@ axe.registerPlugin({
   commands: [
     {
       id: 'run-doStuff',
-      callback: function(data, callback) {
+      callback: function (data, callback) {
         return axe.plugins.doStuff.run(
           data.parameter,
           data.action,
@@ -94,22 +94,22 @@ Once all the iframes' run functions have been executed, the callback is called. 
 
 #### Basic plugin instance
 
-Lets implement a basic plugin instance to see how this works. This instance will implement a "highlight" function (to place a basic frame around the bounding box of an element on each iframe on a page)
+Let's implement a basic plugin instance to see how this works. This instance will implement a "highlight" function (to place a basic frame around the bounding box of an element on each iframe on a page)
 
 ```js
 var highlight = {
   id: 'highlight',
   highlighter: new Highlighter(),
-  run: function(contextNode, options, done) {
+  run: function (contextNode, options, done) {
     var that = this;
     Array.prototype.slice
       .call(contextNode.querySelectorAll(options.selector))
-      .forEach(function(node) {
+      .forEach(function (node) {
         that.highlighter.highlight(node, options);
       });
     done();
   },
-  cleanup: function(done) {
+  cleanup: function (done) {
     this.highlighter.clear();
     done();
   }

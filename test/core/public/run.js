@@ -5,11 +5,6 @@ describe('axe.run', function () {
   var noop = function () {};
   var origRunRules = axe._runRules;
 
-  // These tests can sometimes be flaky in IE, allow for up to 3 retries
-  if (axe.testUtils.isIE11) {
-    this.retries(3);
-  }
-
   beforeEach(function () {
     axe._load({
       rules: [
@@ -85,22 +80,46 @@ describe('axe.run', function () {
     });
   });
 
-  it('treats objects with include or exclude as the context object', function (done) {
-    axe._runRules = function (ctxt) {
-      assert.deepEqual(ctxt, { include: '#BoggyB' });
-      done();
-    };
+  describe('identifies context objects', () => {
+    it('based on the include property', done => {
+      axe._runRules = ctxt => {
+        assert.deepEqual(ctxt, { include: '#BoggyB' });
+        done();
+      };
+      axe.run({ include: '#BoggyB' }, noop);
+    });
 
-    axe.run({ include: '#BoggyB' }, noop);
-  });
+    it('based on the exclude property', done => {
+      axe._runRules = ctxt => {
+        assert.deepEqual(ctxt, { exclude: '#BoggyB' });
+        done();
+      };
+      axe.run({ exclude: '#BoggyB' }, noop);
+    });
 
-  it('treats objects with neither include or exclude as the option object', function (done) {
-    axe._runRules = function (ctxt, opt) {
-      assert.deepEqual(opt.HHG, 'hallelujah');
-      done();
-    };
+    it('based on the fromFrames property', done => {
+      axe._runRules = ctxt => {
+        assert.deepEqual(ctxt, { fromFrames: ['#myFrame'] });
+        done();
+      };
+      axe.run({ fromFrames: ['#myFrame'] }, noop);
+    });
 
-    axe.run({ HHG: 'hallelujah' }, noop);
+    it('based on the fromShadowDom property', done => {
+      axe._runRules = ctxt => {
+        assert.deepEqual(ctxt, { fromShadowDom: ['#myFrame'] });
+        done();
+      };
+      axe.run({ fromShadowDom: ['#myFrame'] }, noop);
+    });
+
+    it('ignores objects with none of those properties', done => {
+      axe._runRules = (ctxt, opt) => {
+        assert.deepEqual(opt.HHG, 'hallelujah');
+        done();
+      };
+      axe.run({ HHG: 'hallelujah' }, noop);
+    });
   });
 
   it('does not fail if no callback is specified', function (done) {
@@ -179,6 +198,28 @@ describe('axe.run', function () {
 
       axe.run({ reporter: 'raw' }, function () {
         assert.isTrue(isClean, 'cleanup must be called first');
+        done();
+      });
+    });
+
+    it('rejects with sync reporter errors', done => {
+      axe.addReporter('throwing', () => {
+        throw new Error('Something went wrong');
+      });
+      axe.run({ reporter: 'throwing' }, err => {
+        assert.equal(err.message, 'Something went wrong');
+        done();
+      });
+    });
+
+    it('rejects with async reporter errors', done => {
+      axe.addReporter('throwing', (results, options, resolve, reject) => {
+        setTimeout(() => {
+          reject(new Error('Something went wrong'));
+        }, 10);
+      });
+      axe.run({ reporter: 'throwing' }, err => {
+        assert.equal(err.message, 'Something went wrong');
         done();
       });
     });

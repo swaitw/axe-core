@@ -11,9 +11,10 @@ var testDirs = [
   'virtual-rules'
 ];
 var testFiles = [];
+var debugPort = 9765; // arbitrary, sync with .vscode/launch.json
 var args = process.argv.slice(2);
 
-args.forEach(function(arg) {
+args.forEach(function (arg) {
   // pattern: testDir=commons,core
   var parts = arg.split('=');
   if (parts[0] === 'testDirs') {
@@ -23,11 +24,15 @@ args.forEach(function(arg) {
   else if (parts[0] === 'testFiles') {
     testFiles = parts[1].split(',');
   }
+  // pattern: debugPort=1234
+  else if (parts[0] === 'debugPort') {
+    debugPort = parseInt(parts[1], 10);
+  }
 });
 
 var testPaths = [];
 if (testFiles.length) {
-  testPaths = testFiles.map(function(file) {
+  testPaths = testFiles.map(function (file) {
     var basename = path.basename(file);
     var extname = path.extname(file);
 
@@ -52,7 +57,7 @@ if (testFiles.length) {
     }
   });
 } else if (testDirs.length) {
-  testPaths = testDirs.map(function(dir) {
+  testPaths = testDirs.map(function (dir) {
     if (dir === 'integration') {
       return path.join('test', dir, '**/*.json');
     }
@@ -63,7 +68,7 @@ if (testFiles.length) {
   });
 }
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
     basePath: '../',
     singleRun: true,
@@ -82,6 +87,12 @@ module.exports = function(config) {
     files: [
       { pattern: 'test/mock/**/*.html', included: false, served: true },
       { pattern: 'test/integration/**/*.css', included: false, served: true },
+      {
+        pattern: 'test/integration/**/*.mjs',
+        included: false,
+        served: true,
+        type: 'module'
+      },
       { pattern: 'test/assets/**/*.*', included: false, served: true },
       {
         pattern: 'test/integration/rules/**/*.html',
@@ -89,13 +100,15 @@ module.exports = function(config) {
         served: true
       },
       'axe.js',
+      { pattern: 'axe.min.js', included: false, served: true },
       'test/testutils.js'
     ].concat(testPaths),
     proxies: {
       '/test': '/base/test',
       '/mock': '/base/test/mock',
       '/integration': '/base/test/integration',
-      '/axe.js': '/base/axe.js'
+      '/axe.js': '/base/axe.js',
+      '/axe.min.js': '/base/axe.min.js'
     },
     browsers: ['ChromeHeadless'],
     reporters: ['spec'],
@@ -107,6 +120,12 @@ module.exports = function(config) {
       mocha: {
         timeout: 4000,
         reporter: 'html'
+      }
+    },
+    customLaunchers: {
+      ChromeDebugging: {
+        base: 'Chrome',
+        flags: ['--remote-debugging-port=' + debugPort]
       }
     }
   });

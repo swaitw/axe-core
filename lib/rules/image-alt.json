@@ -1,5 +1,6 @@
 {
   "id": "image-alt",
+  "impact": "critical",
   "selector": "img",
   "matches": "no-explicit-name-required-matches",
   "tags": [
@@ -8,12 +9,17 @@
     "wcag111",
     "section508",
     "section508.22.a",
+    "TTv5",
+    "TT7.a",
+    "TT7.b",
+    "EN-301-549",
+    "EN-9.1.1.1",
     "ACT"
   ],
   "actIds": ["23a2a8"],
   "metadata": {
-    "description": "Ensures <img> elements have alternate text or a role of none or presentation",
-    "help": "Images must have alternate text"
+    "description": "Ensure <img> elements have alternative text or a role of none or presentation",
+    "help": "Images must have alternative text"
   },
   "all": [],
   "any": [

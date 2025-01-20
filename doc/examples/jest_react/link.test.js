@@ -1,14 +1,13 @@
 import React from 'react';
+import { render } from '@testing-library/react';
 import axe from 'axe-core';
-import { mountToDoc } from './test-helpers';
 
 import Link from './link';
 
 test('Link has no axe violations', done => {
-  const linkComponent = mountToDoc(
+  const { container } = render(
     <Link page="http://www.axe-core.org">axe website</Link>
   );
-  const linkNode = linkComponent.getDOMNode();
 
   const config = {
     rules: {
@@ -16,7 +15,7 @@ test('Link has no axe violations', done => {
       'link-in-text-block': { enabled: false }
     }
   };
-  axe.run(linkNode, config, (err, { violations }) => {
+  axe.run(container, config, (err, { violations }) => {
     expect(err).toBe(null);
     expect(violations).toHaveLength(0);
     done();

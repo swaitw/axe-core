@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <title>Region Test</title>
@@ -38,6 +38,22 @@
       <section title="section 3">
         <p>Content</p>
       </section>
+    </div>
+
+    <div id="img-no-alt">
+      <img src="#" />
+    </div>
+    <div id="img-focusable">
+      <img src="#" tabindex="0" alt="" />
+    </div>
+    <div id="img-aria-global">
+      <img src="#" aria-atomic="true" alt="" />
+    </div>
+    <div id="labeled-object">
+      <object aria-label="bar"></object>
+    </div>
+    <div id="none-role-div">
+      <div id="target" role="none">apples</div>
     </div>
 
     This should be ignored

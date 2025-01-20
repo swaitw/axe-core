@@ -1,9 +1,10 @@
 {
   "id": "landmark-no-duplicate-main",
+  "impact": "moderate",
   "selector": "main:not([role]), [role=main]",
   "tags": ["cat.semantics", "best-practice"],
   "metadata": {
-    "description": "Ensures the document has at most one main landmark",
+    "description": "Ensure the document has at most one main landmark",
     "help": "Document should not have more than one main landmark"
   },
   "all": [],

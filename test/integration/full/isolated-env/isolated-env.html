@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xml:lang="en">
   <head>
     <title>all rules test</title>
@@ -68,7 +68,7 @@
           </tr>
         </table>
 
-        <img src="img.jpg" alt="" />
+        <img src="img.jpg" alt="" aria-braillelabel="my image" />
         <video><track kind="captions" /></video>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -80,7 +80,10 @@
           <circle cx="50" cy="50" r="40" fill="yellow"></circle>
         </svg>
         <div lang="en">English</div>
-        <object title="This object has text"></object>
+        <object
+          title="This object has text"
+          data="data:text/html,Object%20content"
+        ></object>
         <li role="presentation" aria-label="My Heading">Hello</li>
         <div role="img" aria-label="blah"></div>
         <div style="overflow-y: scroll; height: 5px">
@@ -100,6 +103,10 @@
         <button id="fail1"></button>
         <span id="pass1"></span>
         <button id="pass2"></button>
+        <details>
+          <summary>Hello world</summary>
+          <p>Some text</p>
+        </details>
         <div aria-labelledby="fail1 pass1 pass2"></div>
         <audio
           id="incomplete1"
@@ -120,6 +127,7 @@
         src="frames/focusable.html"
         tabindex="-1"
       ></iframe>
+      <p>Paragraph with a <a href="#">link</a>.</p>
     </div>
     <div id="mocha"></div>
     <script src="/test/testutils.js"></script>
